@@ -1,14 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
-import { deleteTransactionAction } from "@/actions/transaction";
 import { formatIDR, formatDateID } from "@/lib/utils";
 import Link from "next/link";
 import TransactionControls from "@/components/TransactionControls";
+import DeleteTransactionModal from "@/components/DeleteTransactionModal";
 import { 
   ArrowDownLeft, 
   ArrowUpRight, 
-  Trash2,
-  PlusCircle,
+  Pencil,
+  PlusCircle, 
   MinusCircle
 } from "lucide-react";
 
@@ -140,20 +140,25 @@ export default async function TransactionsPage({ searchParams }: TransactionsPag
                       </td>
                       {session && (
                         <td className="py-3.5 px-4 text-center whitespace-nowrap no-print">
-                          <form
-                            action={async () => {
-                              "use server";
-                              await deleteTransactionAction(trx.id);
-                            }}
-                          >
-                            <button
-                              type="submit"
-                              title="Hapus Transaksi"
-                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                          <div className="flex items-center justify-center gap-1">
+                            <Link
+                              href={`/transactions/${trx.id}/edit`}
+                              title="Edit Transaksi"
+                              className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
                             >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </form>
+                              <Pencil className="w-4 h-4" />
+                            </Link>
+                            <DeleteTransactionModal
+                              transaction={{
+                                id: trx.id,
+                                type: trx.type,
+                                amount: trx.amount,
+                                category: trx.category,
+                                date: trx.date,
+                                payerPayee: trx.payerPayee || trx.member?.name,
+                              }}
+                            />
+                          </div>
                         </td>
                       )}
                     </tr>

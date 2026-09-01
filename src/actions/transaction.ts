@@ -77,16 +77,90 @@ export async function deleteTransactionAction(id: number) {
       data: {
         userId: session.userId,
         action: "DELETE_TRANSACTION",
-        details: `Menghapus transaksi ID #${id} (${trx.type} Rp ${trx.amount})`,
+        details: `Menghapus transaksi ID #${id} (${trx.type} Rp ${trx.amount.toLocaleString("id-ID")})`,
       },
     }).catch(() => {});
 
     revalidatePath("/");
     revalidatePath("/transactions");
+    revalidatePath("/members");
     return { success: true };
   } catch (err: unknown) {
     console.error("Delete transaction error:", err);
     return { error: "Gagal menghapus transaksi." };
+  }
+}
+
+export async function updateTransactionAction(id: number, formData: FormData) {
+  const session = await getSession();
+  if (!session || (session.role !== "ADMIN" && session.role !== "BENDAHARA")) {
+    return { error: "Akses ditolak. Silakan login sebagai Bendahara/Admin terlebih dahulu." };
+  }
+
+  const amountStr = formData.get("amount") as string;
+  const category = (formData.get("category") as string)?.trim();
+  const payerPayee = (formData.get("payerPayee") as string)?.trim() || null;
+  const dateStr = formData.get("date") as string;
+  const notes = (formData.get("notes") as string)?.trim() || null;
+  const memberIdStr = formData.get("memberId") as string;
+
+  const amount = parseFloat(amountStr?.replace(/[^0-9.-]+/g, "") || "0");
+  if (!amount || amount <= 0) {
+    return { error: "Nominal transaksi harus lebih besar dari Rp 0." };
+  }
+
+  if (!category) {
+    return { error: "Kategori transaksi wajib diisi atau dipilih." };
+  }
+
+  const date = dateStr ? new Date(dateStr) : new Date();
+  const memberId = memberIdStr ? parseInt(memberIdStr, 10) : null;
+
+  try {
+    const existing = await prisma.transaction.findUnique({ where: { id } });
+    if (!existing) {
+      return { error: "Transaksi tidak ditemukan." };
+    }
+
+    const updatedTrx = await prisma.transaction.update({
+      where: { id },
+      data: {
+        amount,
+        category,
+        payerPayee: memberId ? null : payerPayee,
+        date,
+        notes,
+        memberId: isNaN(memberId as number) ? null : memberId,
+      },
+    });
+
+    await prisma.auditLog.create({
+      data: {
+        userId: session.userId,
+        action: `UPDATE_${updatedTrx.type}`,
+        details: `Mengubah transaksi ID #${id} (${updatedTrx.type}) menjadi Rp ${amount.toLocaleString("id-ID")} (${category})`,
+      },
+    }).catch(() => {});
+
+    revalidatePath("/");
+    revalidatePath("/transactions");
+    revalidatePath("/members");
+    return { success: true, transactionId: updatedTrx.id };
+  } catch (err: unknown) {
+    console.error("Update transaction error:", err);
+    return { error: "Gagal memperbarui data transaksi." };
+  }
+}
+
+export async function getTransactionById(id: number) {
+  try {
+    return await prisma.transaction.findUnique({
+      where: { id },
+      include: { member: true },
+    });
+  } catch (err) {
+    console.error("Get transaction error:", err);
+    return null;
   }
 }
 
