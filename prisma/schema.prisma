@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  ADMIN
+  BENDAHARA
+  MEMBER
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+model User {
+  id        Int        @id @default(autoincrement())
+  username  String     @unique
+  name      String
+  password  String
+  role      Role       @default(MEMBER)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  logs      AuditLog[]
+
+  @@map("users")
+}
+
+model Member {
+  id           Int           @id @default(autoincrement())
+  name         String
+  nim          String?
+  phone        String?
+  active       Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  transactions Transaction[]
+
+  @@map("members")
+}
+
+model Transaction {
+  id           Int             @id @default(autoincrement())
+  type         TransactionType
+  amount       Float
+  date         DateTime        @default(now())
+  category     String
+  payerPayee   String?
+  notes        String?
+  proofUrl     String?
+  recorderName String?
+  memberId     Int?
+  member       Member?         @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  @@index([type])
+  @@index([date])
+  @@map("transactions")
+}
+
+model Category {
+  id        Int             @id @default(autoincrement())
+  name      String          @unique
+  type      TransactionType
+  createdAt DateTime        @default(now())
+
+  @@map("categories")
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  details   String?
+  createdAt DateTime @default(now())
+
+  @@map("audit_logs")
+}
