@@ -13,20 +13,20 @@ async function main() {
     update: {},
     create: {
       username: "bendahara",
-      name: "dr. Naufal Zahran (Bendahara)",
+      name: "drh. Naufal Zahran (Bendahara)",
       password: hashedPassword,
       role: "BENDAHARA",
     },
   });
   console.log("Admin user created/verified:", admin.username);
 
-  // 2. Buat Contoh Data Anggota Koas
+  // 2. Buat Contoh Data Anggota Koas FKH
   const sampleMembers = [
-    { name: "dr. Naufal Zahran S.", nim: "20260101", phone: "082117442441" },
-    { name: "dr. Ahmad Fauzi", nim: "20260102", phone: "081234567891" },
-    { name: "dr. Sarah Amalia", nim: "20260103", phone: "081234567892" },
-    { name: "dr. Budi Santoso", nim: "20260104", phone: "081234567893" },
-    { name: "dr. Cindy Clarissa", nim: "20260105", phone: "081234567894" },
+    { name: "drh. Naufal Zahran S.", nim: "20260101", phone: "082117442441" },
+    { name: "drh. Ahmad Fauzi", nim: "20260102", phone: "081234567891" },
+    { name: "drh. Sarah Amalia", nim: "20260103", phone: "081234567892" },
+    { name: "drh. Budi Santoso", nim: "20260104", phone: "081234567893" },
+    { name: "drh. Cindy Clarissa", nim: "20260105", phone: "081234567894" },
   ];
 
   for (const m of sampleMembers) {
@@ -47,38 +47,38 @@ async function main() {
         {
           type: "INCOME",
           amount: 500000,
-          category: "Uang Kas Awal Stase",
+          category: "Uang Kas Awal Stase / Rotasi",
           payerPayee: "Iuran Seluruh Anggota (5 orang)",
-          notes: "Iuran kas awal masuk stase bedah / interna",
-          recorderName: "dr. Naufal Zahran",
+          notes: "Iuran kas awal masuk Stase Bedah Veteriner & Klinik Hewan",
+          recorderName: "drh. Naufal Zahran",
           date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
         },
         {
           type: "INCOME",
           amount: 50000,
-          category: "Iuran Mingguan / Bulanan",
-          payerPayee: firstMember?.name || "dr. Naufal Zahran S.",
+          category: "Iuran Kas Rutin (Mingguan / Bulanan)",
+          payerPayee: firstMember?.name || "drh. Naufal Zahran S.",
           memberId: firstMember?.id || null,
-          notes: "Iuran kas minggu ke-1",
-          recorderName: "dr. Naufal Zahran",
+          notes: "Iuran kas minggu ke-1 stase klinik",
+          recorderName: "drh. Naufal Zahran",
           date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
         },
         {
           type: "EXPENSE",
-          amount: 75000,
-          category: "Alat Medis (Spuit, Handscoon, dsb)",
-          payerPayee: "Apotek Kimia Farma",
-          notes: "Beli spuit 3cc, 5cc, dan handscoon steril untuk tindakan",
-          recorderName: "dr. Naufal Zahran",
+          amount: 85000,
+          category: "Alat Medis & Operasi Bedah (Spuit, Benang, Handscoon, Blade)",
+          payerPayee: "Apotek Hewan & Medika Vet",
+          notes: "Beli spuit 3cc, benang catgut chromic 3-0, blade no.10, dan handscoon steril",
+          recorderName: "drh. Naufal Zahran",
           date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
         },
         {
           type: "EXPENSE",
           amount: 45000,
-          category: "Fotokopi / Cetak Modul / Status Pasien",
+          category: "Cetak Modul, Logbook & Rekam Medis",
           payerPayee: "Percetakan Kampus",
-          notes: "Cetak format lembar status pasien & logbook stase",
-          recorderName: "dr. Naufal Zahran",
+          notes: "Cetak formulir amblyop rekam medis pasien & logbook stase PPDH",
+          recorderName: "drh. Naufal Zahran",
           date: new Date(),
         },
       ],

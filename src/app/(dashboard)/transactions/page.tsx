@@ -3,6 +3,7 @@ import { getSession } from "@/lib/auth";
 import { formatIDR, formatDateID } from "@/lib/utils";
 import Link from "next/link";
 import TransactionControls from "@/components/TransactionControls";
+import ShareSummaryButton from "@/components/ShareSummaryButton";
 import DeleteTransactionModal from "@/components/DeleteTransactionModal";
 import { 
   ArrowDownLeft, 
@@ -59,23 +60,29 @@ export default async function TransactionsPage({ searchParams }: TransactionsPag
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="font-extrabold text-slate-900 text-xl sm:text-2xl tracking-tight">
-            Riwayat Rekapitulasi Kas
+            Riwayat Rekapitulasi Kas FKH
           </h1>
           <p className="text-slate-500 text-xs mt-0.5">
-            Daftar lengkap seluruh mutasi kas masuk dan keluar
+            Daftar lengkap seluruh mutasi kas masuk dan keluar kelompok koas
           </p>
         </div>
 
-        <div className="flex items-center gap-2 no-print">
+        <div className="flex flex-wrap items-center gap-2 no-print">
+          <ShareSummaryButton
+            balance={balance}
+            totalIncome={totalIncome}
+            totalExpense={totalExpense}
+            groupName="Kelompok Koas FKH"
+          />
           <Link
             href="/income/new"
-            className="flex items-center gap-1 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition shadow-xs"
+            className="flex items-center gap-1 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow-xs"
           >
             <PlusCircle className="w-3.5 h-3.5" /> + Masuk
           </Link>
           <Link
             href="/expense/new"
-            className="flex items-center gap-1 px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold transition shadow-xs"
+            className="flex items-center gap-1 px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition shadow-xs"
           >
             <MinusCircle className="w-3.5 h-3.5" /> - Keluar
           </Link>

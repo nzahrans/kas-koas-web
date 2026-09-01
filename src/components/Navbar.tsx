@@ -45,7 +45,7 @@ export default function Navbar({ user }: NavbarProps) {
               </div>
               <div>
                 <span className="font-bold text-slate-900 text-sm sm:text-base leading-tight block">Kas Koas</span>
-                <span className="text-[10px] sm:text-[11px] text-blue-600 font-medium leading-none block">Dokter Muda</span>
+                <span className="text-[10px] sm:text-[11px] text-blue-600 font-medium leading-none block">Dokter Hewan Muda (FKH)</span>
               </div>
             </Link>
 

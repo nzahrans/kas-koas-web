@@ -12,11 +12,13 @@ export default function NewExpenseForm() {
   const [error, setError] = useState<string | null>(null);
 
   const defaultCategories = [
-    "Konsumsi / Makan Jaga",
-    "Alat Medis (Spuit, Handscoon, dsb)",
-    "Fotokopi / Cetak Modul / Status Pasien",
-    "Bingkisan / Cinderamata Residen & Konsulen",
-    "Transport / Operasional Stase",
+    "Alat Medis & Operasi Bedah (Spuit, Benang, Handscoon, Blade)",
+    "Obat & Bahan Medis Hewan (Desinfektan, Antiseptik, Antibiotik)",
+    "Pakan & Kebutuhan Pasien / Kandang",
+    "Cetak Modul, Logbook & Rekam Medis",
+    "Konsumsi Jaga Malam / Piket Klinik",
+    "Cinderamata Dosen Pembimbing / Residen",
+    "Transport & Operasional Lapangan (Ruminansia/RPH/Kandang)",
     "Lain-lain",
   ];
 
@@ -128,7 +130,7 @@ export default function NewExpenseForm() {
             <input
               type="text"
               name="payerPayee"
-              placeholder="Contoh: Beli di Apotek K-24 / Konsumsi Jaga Malam"
+              placeholder="Contoh: Apotek Hewan Vet / drh. Dimas (Piket Klinik)"
               className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-rose-500"
             />
           </div>
@@ -141,7 +143,7 @@ export default function NewExpenseForm() {
             <textarea
               name="notes"
               rows={2}
-              placeholder="Rincian item atau alasan pengeluaran..."
+              placeholder="Rincian item obat/alat bedah atau keperluan stase..."
               className="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-slate-900 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-rose-500"
             />
           </div>

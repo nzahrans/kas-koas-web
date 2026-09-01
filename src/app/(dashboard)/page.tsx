@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { getDashboardSummary } from "@/actions/transaction";
 import { formatIDR, formatDateID } from "@/lib/utils";
+import ShareSummaryButton from "@/components/ShareSummaryButton";
 
 export const revalidate = 0; // Dynamic data
 
@@ -26,18 +27,24 @@ export default async function DashboardPage() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/15 text-blue-50 text-[11px] font-semibold mb-2 backdrop-blur-xs">
-              <TrendingUp className="w-3.5 h-3.5" /> Laporan Kas Real-Time
+              <TrendingUp className="w-3.5 h-3.5" /> Laporan Kas PPDH FKH Real-Time
             </span>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-              Keuangan Kas Koas
+              Keuangan Kas Koas FKH
             </h1>
             <p className="text-blue-100 text-xs sm:text-sm mt-1 max-w-md">
-              Pantau arus kas masuk dan pengeluaran operasional kelompok koas secara transparan.
+              Pantau arus kas masuk dan pengeluaran operasional stase kelompok dokter hewan muda secara transparan.
             </p>
           </div>
 
           {/* Quick Action Buttons */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <ShareSummaryButton
+              balance={summary.balance}
+              totalIncome={summary.totalIncome}
+              totalExpense={summary.totalExpense}
+              groupName="Kelompok Koas FKH"
+            />
             <Link
               href="/income/new"
               className="flex items-center gap-1.5 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-900/20 transition transform active:scale-95"

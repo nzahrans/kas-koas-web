@@ -1,16 +1,17 @@
-# 🩺 Kas Koas - Sistem Pencatatan Keuangan Kelompok Koas
+# 🩺 Kas Koas FKH - Sistem Pencatatan Keuangan Dokter Hewan Muda
 
-Sistem web modern pencatatan kas internal kelompok dokter muda (Koas) yang transparan, responsif di layar smartphone/HP saat jaga/stase, dan **100% Bebas Biaya Operasional (Rp 0 / Free Tier Selamanya)**.
+Sistem web modern pencatatan kas internal kelompok dokter hewan muda (Koas Kedokteran Hewan / PPDH) yang transparan, responsif di layar smartphone/HP saat stase klinik/lapangan, dan **100% Bebas Biaya Operasional (Rp 0 / Free Tier Selamanya)**.
 
 ---
 
 ## 🚀 Fitur Utama
 1. **Dashboard Ringkasan Saldo:** Menampilkan Sisa Saldo Kas, Total Pemasukan, Total Pengeluaran secara real-time.
-2. **Pencatatan Pemasukan (Iuran):** Form digital mencatat uang masuk, penyetor, nominal, dan tanggal.
-3. **Pencatatan Pengeluaran:** Form digital mencatat belanja kebutuhan stase (alat medis, konsumsi jaga, modul fotokopi).
-4. **Riwayat Rekapitulasi & Audit:** Tabel mutasi kas lengkap dengan filter tipe, pencarian, serta tombol cetak laporan.
-5. **Daftar Anggota Koas:** Rekap iuran per anggota kelompok.
-6. **Akses Bertingkat:**
+2. **Pencatatan Pemasukan (Iuran):** Form digital mencatat uang kas rutin, uang awal stase, dan iuran tindakan operasi.
+3. **Pencatatan Pengeluaran:** Form digital mencatat belanja kebutuhan stase FKH (alat medis & bedah, obat hewan, pakan pasien/kandang, modul rekam medis).
+4. **Fitur Salin Rekap Kas (1-Click):** Tombol praktis untuk menyalin format rekap laporan kas siap kirim ke grup chat kelompok (WhatsApp, Telegram, Discord, LINE).
+5. **Riwayat Rekapitulasi & Audit:** Tabel mutasi kas lengkap dengan filter tipe, pencarian, serta tombol cetak laporan PDF.
+6. **Daftar Anggota Koas FKH:** Rekap iuran per anggota kelompok dokter hewan muda.
+7. **Akses Bertingkat:**
    - **Anggota Koas (Public/View-Only):** Bisa langsung melihat saldo & riwayat tanpa login.
    - **Bendahara / Admin:** Login untuk menambah, mengedit, atau menghapus catatan kas.
 

@@ -46,7 +46,7 @@ export default function AddMemberForm() {
             type="text"
             name="name"
             required
-            placeholder="dr. Naufal"
+            placeholder="drh. Naufal / Naufal"
             className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>

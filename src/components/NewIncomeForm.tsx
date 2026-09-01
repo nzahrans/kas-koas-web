@@ -22,10 +22,11 @@ export default function NewIncomeForm({ members }: NewIncomeFormProps) {
   const [error, setError] = useState<string | null>(null);
 
   const defaultCategories = [
-    "Iuran Mingguan / Bulanan",
-    "Uang Kas Awal Stase",
+    "Iuran Kas Rutin (Mingguan / Bulanan)",
+    "Uang Kas Awal Stase / Rotasi",
+    "Iuran Khusus Tindakan Operasi / Bahan Bersama",
+    "Pengembalian Sisa Belanja Stase",
     "Sponsorship / Donasi",
-    "Pengembalian Sisa Belanja",
     "Lain-lain",
   ];
 
@@ -163,7 +164,7 @@ export default function NewIncomeForm({ members }: NewIncomeFormProps) {
               <input
                 type="text"
                 name="payerPayee"
-                placeholder="Contoh: dr. Naufal / Sponsorship"
+                placeholder="Contoh: drh. Naufal / Pihak Sponsor"
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             )}
