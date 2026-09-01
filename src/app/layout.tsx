@@ -8,6 +8,15 @@ export const metadata: Metadata = {
   },
   description: "Sistem Transparansi dan Pencatatan Keuangan Kas Kelompok Koas Dokter Muda",
   manifest: "/manifest.json",
+  icons: {
+    icon: "/icons/icon-192.png",
+    apple: "/apple-touch-icon.png",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Kas Koas",
+  },
 };
 
 export const viewport: Viewport = {
