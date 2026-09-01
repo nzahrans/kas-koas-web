@@ -9,7 +9,7 @@ export default async function DashboardLayout({
   const session = await getSession();
 
   return (
-    <div className="min-h-screen flex flex-col pb-20 md:pb-8">
+    <div className="min-h-screen flex flex-col pb-24 md:pb-8">
       <Navbar user={session ? { name: session.name, role: session.role } : null} />
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 pt-6">
         {children}
