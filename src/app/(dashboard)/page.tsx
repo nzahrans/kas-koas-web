@@ -7,9 +7,10 @@ import {
   Minus, 
   ArrowRight,
   TrendingUp,
-  Receipt,
   Calendar,
-  User
+  User,
+  Layers,
+  Sparkles
 } from "lucide-react";
 import { getDashboardSummary } from "@/actions/transaction";
 import { formatIDR, formatDateID } from "@/lib/utils";
@@ -23,17 +24,17 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 text-white shadow-lg shadow-blue-600/15">
+      <div className="bg-gradient-to-r from-blue-700 via-indigo-700 to-slate-900 rounded-2xl p-6 text-white shadow-lg shadow-blue-700/15">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/15 text-blue-50 text-[11px] font-semibold mb-2 backdrop-blur-xs">
-              <TrendingUp className="w-3.5 h-3.5" /> Laporan Kas PPDH FKH Real-Time
+              <TrendingUp className="w-3.5 h-3.5" /> Pembukuan Kas Koas FKH Real-Time
             </span>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-              Keuangan Kas Koas FKH
+              Keuangan Kas Kelompok & Gelombang
             </h1>
-            <p className="text-blue-100 text-xs sm:text-sm mt-1 max-w-md">
-              Pantau arus kas masuk dan pengeluaran operasional stase kelompok dokter hewan muda secara transparan.
+            <p className="text-blue-100 text-xs sm:text-sm mt-1 max-w-lg">
+              Catatan kas transparan terpisah untuk Kas Kelompok dan Kas Gelombang PPDH FKH.
             </p>
           </div>
 
@@ -43,7 +44,9 @@ export default async function DashboardPage() {
               balance={summary.balance}
               totalIncome={summary.totalIncome}
               totalExpense={summary.totalExpense}
-              groupName="Kelompok Koas FKH"
+              kelompok={summary.kelompok}
+              gelombang={summary.gelombang}
+              groupName="Koas FKH"
             />
             <Link
               href="/income/new"
@@ -61,57 +64,105 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* 3 Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {/* Sisa Saldo */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs relative overflow-hidden">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Sisa Saldo Kas</span>
-            <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-              <Wallet className="w-5 h-5" />
+      {/* 2 Main Cashbook Summary Cards (Kelompok & Gelombang) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Kas Kelompok Card */}
+        <div className="bg-white p-5 rounded-2xl border border-blue-200/70 shadow-xs relative overflow-hidden flex flex-col justify-between">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-blue-600 inline-block"></span>
+              <h2 className="font-extrabold text-slate-900 text-base">Kas Kelompok</h2>
+            </div>
+            <span className="text-[11px] font-semibold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full">
+              {summary.kelompok.incomeCount + summary.kelompok.expenseCount} Transaksi
+            </span>
+          </div>
+
+          <div className="my-4">
+            <span className="text-xs font-semibold text-slate-500">Sisa Saldo Kas Kelompok</span>
+            <div className={`text-2xl sm:text-3xl font-extrabold tracking-tight mt-1 ${summary.kelompok.balance < 0 ? "text-rose-600" : "text-blue-700"}`}>
+              {formatIDR(summary.kelompok.balance)}
             </div>
           </div>
-          <div className="mt-3">
-            <div className={`text-2xl font-extrabold tracking-tight ${summary.balance < 0 ? "text-rose-600" : "text-slate-900"}`}>
+
+          <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-100 bg-slate-50/60 -mx-5 -mb-5 p-4 rounded-b-2xl">
+            <div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Masuk</span>
+              <span className="text-xs font-bold text-emerald-600 flex items-center gap-0.5 mt-0.5">
+                <ArrowDownLeft className="w-3.5 h-3.5 shrink-0" />
+                +{formatIDR(summary.kelompok.totalIncome)}
+              </span>
+            </div>
+            <div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Keluar</span>
+              <span className="text-xs font-bold text-rose-600 flex items-center gap-0.5 mt-0.5">
+                <ArrowUpRight className="w-3.5 h-3.5 shrink-0" />
+                -{formatIDR(summary.kelompok.totalExpense)}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Kas Gelombang Card */}
+        <div className="bg-white p-5 rounded-2xl border border-teal-200/70 shadow-xs relative overflow-hidden flex flex-col justify-between">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-teal-600 inline-block"></span>
+              <h2 className="font-extrabold text-slate-900 text-base">Kas Gelombang</h2>
+            </div>
+            <span className="text-[11px] font-semibold text-teal-600 bg-teal-50 px-2.5 py-1 rounded-full">
+              {summary.gelombang.incomeCount + summary.gelombang.expenseCount} Transaksi
+            </span>
+          </div>
+
+          <div className="my-4">
+            <span className="text-xs font-semibold text-slate-500">Sisa Saldo Kas Gelombang</span>
+            <div className={`text-2xl sm:text-3xl font-extrabold tracking-tight mt-1 ${summary.gelombang.balance < 0 ? "text-rose-600" : "text-teal-700"}`}>
+              {formatIDR(summary.gelombang.balance)}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-100 bg-slate-50/60 -mx-5 -mb-5 p-4 rounded-b-2xl">
+            <div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Masuk</span>
+              <span className="text-xs font-bold text-emerald-600 flex items-center gap-0.5 mt-0.5">
+                <ArrowDownLeft className="w-3.5 h-3.5 shrink-0" />
+                +{formatIDR(summary.gelombang.totalIncome)}
+              </span>
+            </div>
+            <div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Keluar</span>
+              <span className="text-xs font-bold text-rose-600 flex items-center gap-0.5 mt-0.5">
+                <ArrowUpRight className="w-3.5 h-3.5 shrink-0" />
+                -{formatIDR(summary.gelombang.totalExpense)}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Combined Overview Mini Banner */}
+      <div className="bg-slate-900 text-white rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-amber-400">
+            <Wallet className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="text-xs text-slate-400 font-semibold">Total Saldo Gabungan (Semua Kas)</div>
+            <div className="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
               {formatIDR(summary.balance)}
             </div>
-            <p className="text-[11px] text-slate-400 mt-1">Saldo akhir yang tersedia</p>
           </div>
         </div>
-
-        {/* Total Pemasukan */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs relative overflow-hidden">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Total Pemasukan</span>
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-              <ArrowDownLeft className="w-5 h-5" />
-            </div>
+        <div className="flex items-center gap-6 text-xs text-slate-300">
+          <div>
+            <span className="text-slate-400 block text-[10px] uppercase font-bold">Total Masuk</span>
+            <span className="text-emerald-400 font-bold">+{formatIDR(summary.totalIncome)}</span>
           </div>
-          <div className="mt-3">
-            <div className="text-2xl font-extrabold tracking-tight text-emerald-600">
-              {formatIDR(summary.totalIncome)}
-            </div>
-            <p className="text-[11px] text-slate-400 mt-1">
-              {summary.incomeCount} transaksi iuran tercatat
-            </p>
-          </div>
-        </div>
-
-        {/* Total Pengeluaran */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs relative overflow-hidden">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Total Pengeluaran</span>
-            <div className="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
-              <ArrowUpRight className="w-5 h-5" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <div className="text-2xl font-extrabold tracking-tight text-rose-600">
-              {formatIDR(summary.totalExpense)}
-            </div>
-            <p className="text-[11px] text-slate-400 mt-1">
-              {summary.expenseCount} mutasi pengeluaran stase
-            </p>
+          <div className="w-px h-6 bg-slate-700"></div>
+          <div>
+            <span className="text-slate-400 block text-[10px] uppercase font-bold">Total Keluar</span>
+            <span className="text-rose-400 font-bold">-{formatIDR(summary.totalExpense)}</span>
           </div>
         </div>
       </div>
@@ -121,7 +172,7 @@ export default async function DashboardPage() {
         <div className="p-5 border-b border-slate-100 flex items-center justify-between">
           <div>
             <h2 className="font-bold text-slate-900 text-base">Mutasi Transaksi Terakhir</h2>
-            <p className="text-slate-500 text-xs mt-0.5">5 transaksi terakhir yang tercatat di sistem</p>
+            <p className="text-slate-500 text-xs mt-0.5">Transaksi terakhir yang dicatat di sistem</p>
           </div>
           <Link
             href="/transactions"
@@ -139,6 +190,7 @@ export default async function DashboardPage() {
           ) : (
             summary.recentTransactions.map((trx) => {
               const isIncome = trx.type === "INCOME";
+              const isKelompok = trx.kasType === "KELOMPOK";
               return (
                 <div key={trx.id} className="p-4 sm:p-5 flex items-center justify-between hover:bg-slate-50/70 transition">
                   <div className="flex items-center gap-3.5">
@@ -150,8 +202,19 @@ export default async function DashboardPage() {
                       {isIncome ? <ArrowDownLeft className="w-5 h-5" /> : <ArrowUpRight className="w-5 h-5" />}
                     </div>
                     <div>
-                      <div className="font-bold text-slate-900 text-sm">
-                        {trx.category}
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-slate-900 text-sm">
+                          {trx.category}
+                        </span>
+                        <span
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                            isKelompok
+                              ? "bg-blue-50 text-blue-700 border border-blue-200"
+                              : "bg-teal-50 text-teal-700 border border-teal-200"
+                          }`}
+                        >
+                          {isKelompok ? "Kas Kelompok" : "Kas Gelombang"}
+                        </span>
                       </div>
                       <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-500 mt-0.5">
                         <span className="flex items-center gap-1">

@@ -10,6 +10,9 @@ interface EditTransactionPageProps {
   }>;
 }
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function EditTransactionPage({ params }: EditTransactionPageProps) {
   const session = await getSession();
   const { id } = await params;
@@ -37,6 +40,7 @@ export default async function EditTransactionPage({ params }: EditTransactionPag
       transaction={{
         id: transaction.id,
         type: transaction.type,
+        kasType: transaction.kasType,
         amount: transaction.amount,
         date: transaction.date,
         category: transaction.category,

@@ -11,16 +11,23 @@ export default function NewExpenseForm() {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  const defaultCategories = [
-    "Alat Medis & Operasi Bedah (Spuit, Benang, Handscoon, Blade)",
-    "Obat & Bahan Medis Hewan (Desinfektan, Antiseptik, Antibiotik)",
-    "Pakan & Kebutuhan Pasien / Kandang",
-    "Cetak Modul, Logbook & Rekam Medis",
-    "Konsumsi Jaga Malam / Piket Klinik",
-    "Cinderamata Dosen Pembimbing / Residen",
-    "Transport & Operasional Lapangan (Ruminansia/RPH/Kandang)",
-    "Lain-lain",
+  const [kasType, setKasType] = useState<"KELOMPOK" | "GELOMBANG">("KELOMPOK");
+  const [category, setCategory] = useState<string>("Uang Kas Kelompok");
+
+  const categories = [
+    "Uang Kas Kelompok",
+    "Uang Kas Gelombang",
+    "Other",
   ];
+
+  const handleKasTypeChange = (type: "KELOMPOK" | "GELOMBANG") => {
+    setKasType(type);
+    if (type === "KELOMPOK") {
+      setCategory("Uang Kas Kelompok");
+    } else {
+      setCategory("Uang Kas Gelombang");
+    }
+  };
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -29,6 +36,7 @@ export default function NewExpenseForm() {
     setError(null);
     const formData = new FormData(e.currentTarget);
     formData.append("type", "EXPENSE");
+    formData.append("kasType", kasType);
 
     startTransition(async () => {
       const res = await createTransactionAction(formData);
@@ -57,7 +65,7 @@ export default function NewExpenseForm() {
           </div>
           <div>
             <h1 className="font-extrabold text-slate-900 text-lg">Catat Pengeluaran Kas</h1>
-            <p className="text-slate-500 text-xs">Pencatatan biaya pengeluaran stase & keperluan kelompok</p>
+            <p className="text-slate-500 text-xs">Pencatatan pengeluaran operasional Kas Kelompok / Gelombang</p>
           </div>
         </div>
 
@@ -68,6 +76,39 @@ export default function NewExpenseForm() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Pilihan Buku Kas (Kas Kelompok vs Kas Gelombang) */}
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              Pilih Buku Catatan Kas <span className="text-rose-500">*</span>
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => handleKasTypeChange("KELOMPOK")}
+                className={`py-2.5 px-3 rounded-xl border text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer ${
+                  kasType === "KELOMPOK"
+                    ? "bg-blue-50 border-blue-600 text-blue-700 ring-2 ring-blue-500/20 shadow-xs"
+                    : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                }`}
+              >
+                <span className="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                Kas Kelompok
+              </button>
+              <button
+                type="button"
+                onClick={() => handleKasTypeChange("GELOMBANG")}
+                className={`py-2.5 px-3 rounded-xl border text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer ${
+                  kasType === "GELOMBANG"
+                    ? "bg-teal-50 border-teal-600 text-teal-700 ring-2 ring-teal-500/20 shadow-xs"
+                    : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                }`}
+              >
+                <span className="w-2.5 h-2.5 rounded-full bg-teal-600"></span>
+                Kas Gelombang
+              </button>
+            </div>
+          </div>
+
           {/* Nominal */}
           <div>
             <label className="block text-xs font-bold text-slate-700 mb-1.5">
@@ -106,15 +147,16 @@ export default function NewExpenseForm() {
           {/* Kategori Pengeluaran */}
           <div>
             <label className="block text-xs font-bold text-slate-700 mb-1.5">
-              Kategori Pengeluaran <span className="text-rose-500">*</span>
+              Kategori Transaksi <span className="text-rose-500">*</span>
             </label>
             <select
               name="category"
               required
-              defaultValue={defaultCategories[0]}
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
               className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-rose-500 bg-white"
             >
-              {defaultCategories.map((cat) => (
+              {categories.map((cat) => (
                 <option key={cat} value={cat}>
                   {cat}
                 </option>

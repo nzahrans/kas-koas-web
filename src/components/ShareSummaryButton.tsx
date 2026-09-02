@@ -4,10 +4,18 @@ import { useState } from "react";
 import { Share2, Check } from "lucide-react";
 import { formatIDR, formatDateID } from "@/lib/utils";
 
+interface KasDetail {
+  balance: number;
+  totalIncome: number;
+  totalExpense: number;
+}
+
 interface ShareSummaryButtonProps {
   balance: number;
   totalIncome: number;
   totalExpense: number;
+  kelompok?: KasDetail;
+  gelombang?: KasDetail;
   groupName?: string;
 }
 
@@ -15,22 +23,43 @@ export default function ShareSummaryButton({
   balance,
   totalIncome,
   totalExpense,
-  groupName = "Kelompok Koas FKH",
+  kelompok,
+  gelombang,
+  groupName = "Koas FKH",
 }: ShareSummaryButtonProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
     const today = formatDateID(new Date());
 
-    const message = `📢 *UPDATE LAPORAN KAS ${groupName.toUpperCase()}*
+    let message = `📢 *UPDATE LAPORAN KAS ${groupName.toUpperCase()}*
 📅 _Per: ${today}_
 
-💰 *Sisa Saldo Kas:* *${formatIDR(balance)}*
-🟢 *Total Kas Masuk:* ${formatIDR(totalIncome)}
-🔴 *Total Kas Keluar:* ${formatIDR(totalExpense)}
+`;
+
+    if (kelompok && gelombang) {
+      message += `👥 *1. KAS KELOMPOK:*
+💰 Saldo: *${formatIDR(kelompok.balance)}*
+🟢 Masuk: ${formatIDR(kelompok.totalIncome)}
+🔴 Keluar: ${formatIDR(kelompok.totalExpense)}
+
+🌊 *2. KAS GELOMBANG:*
+💰 Saldo: *${formatIDR(gelombang.balance)}*
+🟢 Masuk: ${formatIDR(gelombang.totalIncome)}
+🔴 Keluar: ${formatIDR(gelombang.totalExpense)}
 
 ━━━━━━━━━━━━━━━━━━━━
-📌 _Rincian & mutasi lengkap dapat dicek langsung melalui website Kas Koas._
+💳 *TOTAL SALDO GABUNGAN: ${formatIDR(balance)}*
+`;
+    } else {
+      message += `💰 *Sisa Saldo Kas:* *${formatIDR(balance)}*
+🟢 *Total Kas Masuk:* ${formatIDR(totalIncome)}
+🔴 *Total Kas Keluar:* ${formatIDR(totalExpense)}
+`;
+    }
+
+    message += `━━━━━━━━━━━━━━━━━━━━
+📌 _Rincian & bukti transaksi dapat diakses melalui website Kas Koas._
 Semangat stase rekan-rekan dokter hewan muda! 🙏✨`;
 
     navigator.clipboard.writeText(message).then(() => {
@@ -48,7 +77,7 @@ Semangat stase rekan-rekan dokter hewan muda! 🙏✨`;
           ? "bg-emerald-700 text-white"
           : "bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-900/20"
       }`}
-      title="Salin ringkasan kas untuk dibagikan ke grup"
+      title="Salin ringkasan kas untuk dibagikan ke WhatsApp grup"
     >
       {copied ? (
         <>

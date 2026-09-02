@@ -16,19 +16,27 @@ import {
 interface TransactionsPageProps {
   searchParams: Promise<{
     type?: string;
+    kasType?: string;
     q?: string;
   }>;
 }
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default async function TransactionsPage({ searchParams }: TransactionsPageProps) {
   const session = await getSession();
   const params = await searchParams;
   const filterType = params.type;
+  const filterKasType = params.kasType?.toUpperCase();
   const searchQuery = params.q?.trim();
 
   const whereClause: any = {};
   if (filterType === "INCOME" || filterType === "EXPENSE") {
     whereClause.type = filterType;
+  }
+  if (filterKasType === "KELOMPOK" || filterKasType === "GELOMBANG") {
+    whereClause.kasType = filterKasType;
   }
   if (searchQuery) {
     whereClause.OR = [
@@ -40,7 +48,11 @@ export default async function TransactionsPage({ searchParams }: TransactionsPag
 
   const transactions = await prisma.transaction.findMany({
     where: whereClause,
-    orderBy: { date: "desc" },
+    orderBy: [
+      { date: "desc" },
+      { createdAt: "desc" },
+      { id: "desc" },
+    ],
     include: { member: true },
   });
 
@@ -54,16 +66,18 @@ export default async function TransactionsPage({ searchParams }: TransactionsPag
 
   const balance = totalIncome - totalExpense;
 
+  const titleKas = filterKasType === "KELOMPOK" ? "Kas Kelompok" : filterKasType === "GELOMBANG" ? "Kas Gelombang" : "Semua Kas";
+
   return (
     <div className="space-y-6">
       {/* Header & Action Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="font-extrabold text-slate-900 text-xl sm:text-2xl tracking-tight">
-            Riwayat Rekapitulasi Kas FKH
+            Riwayat Kas ({titleKas})
           </h1>
           <p className="text-slate-500 text-xs mt-0.5">
-            Daftar lengkap seluruh mutasi kas masuk dan keluar kelompok koas
+            Daftar lengkap transaksi kas masuk dan keluar kelompok koas
           </p>
         </div>
 
@@ -72,7 +86,7 @@ export default async function TransactionsPage({ searchParams }: TransactionsPag
             balance={balance}
             totalIncome={totalIncome}
             totalExpense={totalExpense}
-            groupName="Kelompok Koas FKH"
+            groupName={`Kas Koas FKH (${titleKas})`}
           />
           <Link
             href="/income/new"
@@ -99,6 +113,7 @@ export default async function TransactionsPage({ searchParams }: TransactionsPag
             <thead>
               <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider text-[11px]">
                 <th className="py-3 px-4">Tanggal</th>
+                <th className="py-3 px-4">Buku Kas</th>
                 <th className="py-3 px-4">Tipe</th>
                 <th className="py-3 px-4">Kategori / Keterangan</th>
                 <th className="py-3 px-4">Pihak / Anggota</th>
@@ -109,17 +124,29 @@ export default async function TransactionsPage({ searchParams }: TransactionsPag
             <tbody className="divide-y divide-slate-100">
               {transactions.length === 0 ? (
                 <tr>
-                  <td colSpan={session ? 6 : 5} className="py-12 text-center text-slate-400">
+                  <td colSpan={session ? 7 : 6} className="py-12 text-center text-slate-400">
                     Tidak ada data transaksi yang sesuai filter.
                   </td>
                 </tr>
               ) : (
                 transactions.map((trx) => {
                   const isIncome = trx.type === "INCOME";
+                  const isKelompok = trx.kasType === "KELOMPOK";
                   return (
                     <tr key={trx.id} className="hover:bg-slate-50/70 transition">
                       <td className="py-3.5 px-4 font-medium text-slate-700 whitespace-nowrap">
                         {formatDateID(trx.date)}
+                      </td>
+                      <td className="py-3.5 px-4 whitespace-nowrap">
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold ${
+                            isKelompok
+                              ? "bg-blue-50 text-blue-700 border border-blue-200"
+                              : "bg-teal-50 text-teal-700 border border-teal-200"
+                          }`}
+                        >
+                          {isKelompok ? "Kas Kelompok" : "Kas Gelombang"}
+                        </span>
                       </td>
                       <td className="py-3.5 px-4 whitespace-nowrap">
                         <span
@@ -176,7 +203,7 @@ export default async function TransactionsPage({ searchParams }: TransactionsPag
             {transactions.length > 0 && (
               <tfoot>
                 <tr className="bg-slate-50 font-bold border-t-2 border-slate-200 text-slate-900 text-xs">
-                  <td colSpan={3} className="py-3.5 px-4">
+                  <td colSpan={4} className="py-3.5 px-4">
                     Total Rekap Terpilih:
                   </td>
                   <td colSpan={session ? 3 : 2} className="py-3.5 px-4 text-right">

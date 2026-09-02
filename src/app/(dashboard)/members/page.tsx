@@ -6,6 +6,9 @@ import AddMemberForm from "@/components/AddMemberForm";
 import EditMemberModal from "@/components/EditMemberModal";
 import DeleteMemberModal from "@/components/DeleteMemberModal";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function MembersPage() {
   const session = await getSession();
   const members = await prisma.member.findMany({
