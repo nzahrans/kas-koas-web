@@ -1,8 +1,14 @@
 import { loginAction } from "@/actions/auth";
-import Link from "next/link";
-import { Stethoscope, ArrowLeft, KeyRound } from "lucide-react";
+import { getSession } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { Stethoscope, KeyRound } from "lucide-react";
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const session = await getSession();
+  if (session) {
+    redirect("/");
+  }
+
   async function handleLogin(formData: FormData) {
     "use server";
     await loginAction(formData);
@@ -11,22 +17,15 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md px-4">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 transition mb-6"
-        >
-          <ArrowLeft className="w-4 h-4" /> Kembali ke Halaman Utama
-        </Link>
-
         <div className="text-center">
           <div className="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center mx-auto shadow-lg shadow-blue-500/25">
             <Stethoscope className="w-6 h-6" />
           </div>
           <h2 className="mt-4 text-2xl font-extrabold text-slate-900 tracking-tight">
-            Login Bendahara Kas
+            Login Kas Koas FKH
           </h2>
           <p className="mt-1 text-xs text-slate-500">
-            Masuk untuk mencatat pemasukan, pengeluaran, dan audit kas kelompok koas
+            Masuk untuk mengakses pembukuan Kas Kelompok dan Kas Gelombang
           </p>
         </div>
 
