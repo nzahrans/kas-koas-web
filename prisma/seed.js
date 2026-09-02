@@ -41,49 +41,76 @@ async function main() {
   const count = await prisma.transaction.count();
   if (count === 0) {
     const firstMember = await prisma.member.findFirst();
+    const secondMember = await prisma.member.findFirst({
+      where: { NOT: { id: firstMember ? firstMember.id : 0 } },
+    });
 
     await prisma.transaction.createMany({
       data: [
         {
           type: "INCOME",
+          kasType: "KELOMPOK",
           amount: 500000,
-          category: "Uang Kas Awal Stase / Rotasi",
+          category: "Uang Kas Kelompok",
           payerPayee: "Iuran Seluruh Anggota (5 orang)",
-          notes: "Iuran kas awal masuk Stase Bedah Veteriner & Klinik Hewan",
-          recorderName: "drh. Naufal Zahran",
+          notes: "Iuran kas awal kelompok stase klinik",
+          recorderName: "drh. Naufal Zahran (Bendahara)",
+          date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000),
+        },
+        {
+          type: "INCOME",
+          kasType: "KELOMPOK",
+          amount: 50000,
+          category: "Uang Kas Kelompok",
+          payerPayee: firstMember?.name || "drh. Naufal Zahran S.",
+          memberId: firstMember?.id || null,
+          notes: "Iuran kas rutin mingguan stase",
+          recorderName: "drh. Naufal Zahran (Bendahara)",
           date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
         },
         {
           type: "INCOME",
-          amount: 50000,
-          category: "Iuran Kas Rutin (Mingguan / Bulanan)",
-          payerPayee: firstMember?.name || "drh. Naufal Zahran S.",
-          memberId: firstMember?.id || null,
-          notes: "Iuran kas minggu ke-1 stase klinik",
-          recorderName: "drh. Naufal Zahran",
+          kasType: "GELOMBANG",
+          amount: 1500000,
+          category: "Uang Kas Gelombang",
+          payerPayee: "Iuran Bersama Gelombang PPDH",
+          notes: "Uang kas gelombang untuk kegiatan rotasi besar",
+          recorderName: "drh. Naufal Zahran (Bendahara)",
           date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
         },
         {
           type: "EXPENSE",
+          kasType: "KELOMPOK",
           amount: 85000,
-          category: "Alat Medis & Operasi Bedah (Spuit, Benang, Handscoon, Blade)",
-          payerPayee: "Apotek Hewan & Medika Vet",
-          notes: "Beli spuit 3cc, benang catgut chromic 3-0, blade no.10, dan handscoon steril",
-          recorderName: "drh. Naufal Zahran",
+          category: "Uang Kas Kelompok",
+          payerPayee: "Apotek Medika Vet",
+          notes: "Beli spuit 3cc, blade no.10 & handscoon steril kelompok",
+          recorderName: "drh. Naufal Zahran (Bendahara)",
+          date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+        },
+        {
+          type: "EXPENSE",
+          kasType: "GELOMBANG",
+          amount: 250000,
+          category: "Uang Kas Gelombang",
+          payerPayee: "Percetakan Kampus",
+          notes: "Cetak buku panduan & rekam medis gelombang",
+          recorderName: "drh. Naufal Zahran (Bendahara)",
           date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
         },
         {
           type: "EXPENSE",
-          amount: 45000,
-          category: "Cetak Modul, Logbook & Rekam Medis",
-          payerPayee: "Percetakan Kampus",
-          notes: "Cetak formulir amblyop rekam medis pasien & logbook stase PPDH",
-          recorderName: "drh. Naufal Zahran",
+          kasType: "KELOMPOK",
+          amount: 35000,
+          category: "Other",
+          payerPayee: "Konsumsi Diskusi Kasus",
+          notes: "Snack diskusi laporan kasus stase",
+          recorderName: "drh. Naufal Zahran (Bendahara)",
           date: new Date(),
         },
       ],
     });
-    console.log("Sample initial transactions created.");
+    console.log("Sample initial transactions created with Kas Kelompok & Kas Gelombang.");
   }
 
   console.log("Database seed completed!");
