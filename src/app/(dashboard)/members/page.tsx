@@ -26,10 +26,10 @@ export default async function MembersPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="font-extrabold text-slate-900 text-xl sm:text-2xl tracking-tight">
-            Daftar Anggota Koas FKH
+            Daftar Anggota Kas Low Kort1sol
           </h1>
           <p className="text-slate-500 text-xs mt-0.5">
-            Daftar dokter hewan muda (PPDH) dan rekapitulasi iuran kas per anggota
+            Daftar anggota dan rekapitulasi iuran kas per anggota
           </p>
         </div>
       </div>

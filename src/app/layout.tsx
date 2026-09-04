@@ -3,10 +3,10 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Kas Koas - Sistem Pencatatan Keuangan",
-    template: "%s | Kas Koas",
+    default: "Kas Low Kort1sol - Sistem Pencatatan Keuangan",
+    template: "%s | Kas Low Kort1sol",
   },
-  description: "Sistem Transparansi dan Pencatatan Keuangan Kas Kelompok Koas Dokter Muda",
+  description: "Sistem Transparansi dan Pencatatan Keuangan Kas Low Kort1sol",
   manifest: "/manifest.json",
   icons: {
     icon: "/icons/icon-192.png",
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Kas Koas",
+    title: "Kas Low Kort1sol",
   },
 };
 

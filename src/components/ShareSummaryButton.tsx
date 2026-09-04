@@ -25,14 +25,14 @@ export default function ShareSummaryButton({
   totalExpense,
   kelompok,
   gelombang,
-  groupName = "Koas FKH",
+  groupName = "Kas Low Kort1sol",
 }: ShareSummaryButtonProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
     const today = formatDateID(new Date());
 
-    let message = `📢 *UPDATE LAPORAN KAS ${groupName.toUpperCase()}*
+    let message = `📢 *UPDATE LAPORAN ${groupName.toUpperCase()}*
 📅 _Per: ${today}_
 
 `;
@@ -59,8 +59,8 @@ export default function ShareSummaryButton({
     }
 
     message += `━━━━━━━━━━━━━━━━━━━━
-📌 _Rincian & bukti transaksi dapat diakses melalui website Kas Koas._
-Semangat stase rekan-rekan dokter hewan muda! 🙏✨`;
+📌 _Rincian & catatan transaksi dapat diakses melalui website Kas Low Kort1sol._
+Semangat rekan-rekan semua! 🙏✨`;
 
     navigator.clipboard.writeText(message).then(() => {
       setCopied(true);
