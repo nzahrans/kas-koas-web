@@ -51,12 +51,11 @@ export async function loginAction(formData: FormData) {
         details: `User ${user.name} (${user.username}) berhasil login`,
       },
     }).catch(() => {});
+    return { success: true };
   } catch (err: unknown) {
     console.error("Login error:", err);
     return { error: "Terjadi kendala saat proses login. Coba lagi." };
   }
-
-  redirect("/");
 }
 
 export async function logoutAction() {

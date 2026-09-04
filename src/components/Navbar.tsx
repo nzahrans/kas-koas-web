@@ -44,8 +44,8 @@ export default function Navbar({ user }: NavbarProps) {
                 <Stethoscope className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
               <div>
-                <span className="font-bold text-slate-900 text-sm sm:text-base leading-tight block">Kas Koas</span>
-                <span className="text-[10px] sm:text-[11px] text-blue-600 font-medium leading-none block">Dokter Hewan Muda (FKH)</span>
+                <span className="font-bold text-slate-900 text-sm sm:text-base leading-tight block">Kas Low Kort1sol</span>
+                <span className="text-[10px] sm:text-[11px] text-blue-600 font-medium leading-none block">Buku Kas Kelompok & Gelombang</span>
               </div>
             </Link>
 
@@ -76,10 +76,10 @@ export default function Navbar({ user }: NavbarProps) {
               {user ? (
                 <div className="flex items-center gap-2 sm:gap-2.5">
                   <div className="text-right hidden sm:block">
-                    <div className="text-xs font-bold text-slate-900">{user.name}</div>
-                    <div className="text-[10px] uppercase tracking-wider font-semibold text-blue-600">
-                      {user.role}
-                    </div>
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold shadow-2xs">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+                      {user.role === "ADMIN" ? "Admin" : "Bendahara"}
+                    </span>
                   </div>
                   <form action={logoutAction}>
                     <button
