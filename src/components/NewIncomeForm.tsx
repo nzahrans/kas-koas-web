@@ -3,7 +3,7 @@
 import { useState, useTransition, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createTransactionAction } from "@/actions/transaction";
-import { formatIDR } from "@/lib/utils";
+import { formatIDR, formatNumberInput, parseNumberInput } from "@/lib/utils";
 import Link from "next/link";
 import { 
   ArrowDownLeft, 
@@ -35,7 +35,6 @@ export default function NewIncomeForm({ members }: NewIncomeFormProps) {
   const [error, setError] = useState<string | null>(null);
 
   const [kasType, setKasType] = useState<"KELOMPOK" | "GELOMBANG">("KELOMPOK");
-  const [category, setCategory] = useState<string>("Uang Kas Kelompok");
   const [selectedMemberIds, setSelectedMemberIds] = useState<number[]>([]);
   const [amountInput, setAmountInput] = useState<string>("");
 
@@ -43,19 +42,8 @@ export default function NewIncomeForm({ members }: NewIncomeFormProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const categories = [
-    "Uang Kas Kelompok",
-    "Uang Kas Gelombang",
-    "Other",
-  ];
-
   const handleKasTypeChange = (type: "KELOMPOK" | "GELOMBANG") => {
     setKasType(type);
-    if (type === "KELOMPOK") {
-      setCategory("Uang Kas Kelompok");
-    } else {
-      setCategory("Uang Kas Gelombang");
-    }
   };
 
   const today = new Date().toISOString().split("T")[0];
@@ -101,21 +89,33 @@ export default function NewIncomeForm({ members }: NewIncomeFormProps) {
     (m.nim && m.nim.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const parsedAmount = parseFloat(amountInput.replace(/[^0-9.-]+/g, "") || "0");
+  const parsedAmount = parseNumberInput(amountInput);
   const totalBatchAmount = selectedMemberIds.length > 0 ? parsedAmount * selectedMemberIds.length : parsedAmount;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     const formData = new FormData(e.currentTarget);
+    formData.set("amount", parsedAmount.toString());
     formData.append("type", "INCOME");
     formData.append("kasType", kasType);
+    formData.append("category", kasType === "GELOMBANG" ? "Kas Gelombang" : "Kas Kelompok");
 
     if (!useCustomPayer) {
+      if (selectedMemberIds.length === 0) {
+        setError("Nama penyetor wajib dipilih (pilih minimal 1 anggota koas).");
+        return;
+      }
       formData.delete("memberIds");
       selectedMemberIds.forEach((id) => {
         formData.append("memberIds", id.toString());
       });
+    } else {
+      const customPayer = (formData.get("payerPayee") as string)?.trim();
+      if (!customPayer) {
+        setError("Nama penyetor wajib diisi.");
+        return;
+      }
     }
 
     startTransition(async () => {
@@ -199,14 +199,12 @@ export default function NewIncomeForm({ members }: NewIncomeFormProps) {
                 Rp
               </span>
               <input
-                type="number"
+                type="text"
+                inputMode="numeric"
                 name="amount"
                 required
-                min="500"
-                step="500"
-                placeholder="50.000"
                 value={amountInput}
-                onChange={(e) => setAmountInput(e.target.value)}
+                onChange={(e) => setAmountInput(formatNumberInput(e.target.value))}
                 className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-300 text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-base"
               />
             </div>
@@ -226,32 +224,11 @@ export default function NewIncomeForm({ members }: NewIncomeFormProps) {
             />
           </div>
 
-          {/* Kategori Pemasukan */}
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">
-              Kategori Transaksi <span className="text-rose-500">*</span>
-            </label>
-            <select
-              name="category"
-              required
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
-            >
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
-          </div>
-
           {/* Nama Penyetor / Anggota Koas (Multi-Select Tag Dropdown) */}
           <div className="relative" ref={dropdownRef}>
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                <Users className="w-3.5 h-3.5 text-blue-600" />
-                Nama Penyetor ({useCustomPayer ? "Pihak Luar / Manual" : "Pilih Anggota Koas"})
+                Nama Penyetor (Pilih Anggota Koas) <span className="text-rose-500">*</span>
               </label>
               {members.length > 0 && (
                 <button
@@ -406,7 +383,8 @@ export default function NewIncomeForm({ members }: NewIncomeFormProps) {
               <input
                 type="text"
                 name="payerPayee"
-                placeholder="Contoh: drh. Naufal / Pihak Sponsor / Alumni"
+                required
+                placeholder="Contoh: drh. Tamu / Pihak Sponsor / Alumni"
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             )}
@@ -420,7 +398,6 @@ export default function NewIncomeForm({ members }: NewIncomeFormProps) {
             <textarea
               name="notes"
               rows={2}
-              placeholder="Catatan tambahan..."
               className="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-slate-900 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>

@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createTransactionAction } from "@/actions/transaction";
+import { formatNumberInput, parseNumberInput } from "@/lib/utils";
 import Link from "next/link";
 import { ArrowUpRight, ArrowLeft, MinusCircle, Loader2 } from "lucide-react";
 
@@ -12,21 +13,10 @@ export default function NewExpenseForm() {
   const [error, setError] = useState<string | null>(null);
 
   const [kasType, setKasType] = useState<"KELOMPOK" | "GELOMBANG">("KELOMPOK");
-  const [category, setCategory] = useState<string>("Uang Kas Kelompok");
-
-  const categories = [
-    "Uang Kas Kelompok",
-    "Uang Kas Gelombang",
-    "Other",
-  ];
+  const [amountInput, setAmountInput] = useState<string>("");
 
   const handleKasTypeChange = (type: "KELOMPOK" | "GELOMBANG") => {
     setKasType(type);
-    if (type === "KELOMPOK") {
-      setCategory("Uang Kas Kelompok");
-    } else {
-      setCategory("Uang Kas Gelombang");
-    }
   };
 
   const today = new Date().toISOString().split("T")[0];
@@ -34,9 +24,12 @@ export default function NewExpenseForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
+    const parsedAmount = parseNumberInput(amountInput);
     const formData = new FormData(e.currentTarget);
+    formData.set("amount", parsedAmount.toString());
     formData.append("type", "EXPENSE");
     formData.append("kasType", kasType);
+    formData.append("category", kasType === "GELOMBANG" ? "Kas Gelombang" : "Kas Kelompok");
 
     startTransition(async () => {
       const res = await createTransactionAction(formData);
@@ -119,12 +112,12 @@ export default function NewExpenseForm() {
                 Rp
               </span>
               <input
-                type="number"
+                type="text"
+                inputMode="numeric"
                 name="amount"
                 required
-                min="500"
-                step="500"
-                placeholder="25.000"
+                value={amountInput}
+                onChange={(e) => setAmountInput(formatNumberInput(e.target.value))}
                 className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-300 text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent text-base"
               />
             </div>
@@ -144,48 +137,14 @@ export default function NewExpenseForm() {
             />
           </div>
 
-          {/* Kategori Pengeluaran */}
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">
-              Kategori Transaksi <span className="text-rose-500">*</span>
-            </label>
-            <select
-              name="category"
-              required
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-rose-500 bg-white"
-            >
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Peruntukan / Pembeli */}
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">
-              Peruntukan / PIC Pembeli
-            </label>
-            <input
-              type="text"
-              name="payerPayee"
-              placeholder="Contoh: Apotek Hewan Vet / drh. Dimas (Piket Klinik)"
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-rose-500"
-            />
-          </div>
-
           {/* Keterangan / Catatan */}
           <div>
             <label className="block text-xs font-bold text-slate-700 mb-1.5">
-              Keterangan Rinci (Opsional)
+              Keterangan / Catatan (Opsional)
             </label>
             <textarea
               name="notes"
               rows={2}
-              placeholder="Rincian item obat/alat bedah atau keperluan stase..."
               className="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-slate-900 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-rose-500"
             />
           </div>

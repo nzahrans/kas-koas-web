@@ -35,3 +35,14 @@ export function formatDateFull(date: Date | string): string {
     minute: "2-digit",
   }).format(d);
 }
+
+export function formatNumberInput(value: string): string {
+  const clean = value.replace(/\D/g, "");
+  if (!clean) return "";
+  return new Intl.NumberFormat("id-ID").format(parseInt(clean, 10));
+}
+
+export function parseNumberInput(value: string): number {
+  const clean = value.replace(/\D/g, "");
+  return clean ? parseInt(clean, 10) : 0;
+}

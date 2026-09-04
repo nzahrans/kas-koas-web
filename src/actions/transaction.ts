@@ -15,19 +15,19 @@ export async function createTransactionAction(formData: FormData) {
   const kasTypeRaw = (formData.get("kasType") as string)?.toUpperCase();
   const kasType: KasType = kasTypeRaw === "GELOMBANG" ? KasType.GELOMBANG : KasType.KELOMPOK;
   const amountStr = formData.get("amount") as string;
-  const category = (formData.get("category") as string)?.trim();
+  let category = (formData.get("category") as string)?.trim();
   const payerPayee = (formData.get("payerPayee") as string)?.trim() || null;
   const dateStr = formData.get("date") as string;
   const notes = (formData.get("notes") as string)?.trim() || null;
   const memberIdStr = formData.get("memberId") as string;
 
-  const amount = parseFloat(amountStr?.replace(/[^0-9.-]+/g, "") || "0");
+  const amount = parseFloat(amountStr?.replace(/\D/g, "") || "0");
   if (!amount || amount <= 0) {
     return { error: "Nominal transaksi harus lebih besar dari Rp 0." };
   }
 
   if (!category) {
-    return { error: "Kategori transaksi wajib diisi atau dipilih." };
+    category = kasType === KasType.GELOMBANG ? "Kas Gelombang" : "Kas Kelompok";
   }
 
   const date = dateStr ? new Date(dateStr) : new Date();
@@ -41,6 +41,10 @@ export async function createTransactionAction(formData: FormData) {
   }
 
   const kasLabel = kasType === "GELOMBANG" ? "Kas Gelombang" : "Kas Kelompok";
+
+  if (type === "INCOME" && memberIds.length === 0 && !payerPayee) {
+    return { error: "Nama penyetor wajib diisi atau dipilih." };
+  }
 
   try {
     if (memberIds.length > 1) {
@@ -166,19 +170,19 @@ export async function updateTransactionAction(id: number, formData: FormData) {
   const kasTypeRaw = (formData.get("kasType") as string)?.toUpperCase();
   const kasType: KasType = kasTypeRaw === "GELOMBANG" ? KasType.GELOMBANG : KasType.KELOMPOK;
   const amountStr = formData.get("amount") as string;
-  const category = (formData.get("category") as string)?.trim();
+  let category = (formData.get("category") as string)?.trim();
   const payerPayee = (formData.get("payerPayee") as string)?.trim() || null;
   const dateStr = formData.get("date") as string;
   const notes = (formData.get("notes") as string)?.trim() || null;
   const memberIdStr = formData.get("memberId") as string;
 
-  const amount = parseFloat(amountStr?.replace(/[^0-9.-]+/g, "") || "0");
+  const amount = parseFloat(amountStr?.replace(/\D/g, "") || "0");
   if (!amount || amount <= 0) {
     return { error: "Nominal transaksi harus lebih besar dari Rp 0." };
   }
 
   if (!category) {
-    return { error: "Kategori transaksi wajib diisi atau dipilih." };
+    category = kasType === KasType.GELOMBANG ? "Kas Gelombang" : "Kas Kelompok";
   }
 
   const date = dateStr ? new Date(dateStr) : new Date();

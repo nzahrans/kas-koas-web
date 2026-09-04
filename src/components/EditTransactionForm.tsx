@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { updateTransactionAction } from "@/actions/transaction";
+import { formatNumberInput, parseNumberInput } from "@/lib/utils";
 import { ArrowDownLeft, ArrowUpRight, Save, Loader2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
@@ -36,20 +37,9 @@ export default function EditTransactionForm({ transaction, members }: EditTransa
 
   const isIncome = transaction.type === "INCOME";
   const [kasType, setKasType] = useState<"KELOMPOK" | "GELOMBANG">(transaction.kasType || "KELOMPOK");
-  const [category, setCategory] = useState<string>(transaction.category || (transaction.kasType === "GELOMBANG" ? "Uang Kas Gelombang" : "Uang Kas Kelompok"));
-
-  const defaultCategories = [
-    "Uang Kas Kelompok",
-    "Uang Kas Gelombang",
-    "Other",
-  ];
-
-  const categories = [...defaultCategories];
-
-  // Include existing category if not in default list
-  if (transaction.category && !categories.includes(transaction.category)) {
-    categories.push(transaction.category);
-  }
+  const [amountInput, setAmountInput] = useState<string>(
+    formatNumberInput(transaction.amount ? transaction.amount.toString() : "")
+  );
 
   const handleKasTypeChange = (type: "KELOMPOK" | "GELOMBANG") => {
     setKasType(type);
@@ -61,14 +51,33 @@ export default function EditTransactionForm({ transaction, members }: EditTransa
     : new Date().toISOString().split("T")[0];
 
   const [useCustomPayer, setUseCustomPayer] = useState(
-    isIncome ? !transaction.memberId && !!transaction.payerPayee : true
+    isIncome ? !transaction.memberId && !!transaction.payerPayee : false
   );
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
+    const parsedAmount = parseNumberInput(amountInput);
     const formData = new FormData(e.currentTarget);
+    formData.set("amount", parsedAmount.toString());
     formData.append("kasType", kasType);
+    formData.append("category", kasType === "GELOMBANG" ? "Kas Gelombang" : "Kas Kelompok");
+
+    if (isIncome) {
+      if (!useCustomPayer) {
+        const memberId = formData.get("memberId") as string;
+        if (!memberId) {
+          setError("Nama penyetor wajib dipilih.");
+          return;
+        }
+      } else {
+        const payer = (formData.get("payerPayee") as string)?.trim();
+        if (!payer) {
+          setError("Nama penyetor wajib diisi.");
+          return;
+        }
+      }
+    }
 
     startTransition(async () => {
       const res = await updateTransactionAction(transaction.id, formData);
@@ -159,12 +168,12 @@ export default function EditTransactionForm({ transaction, members }: EditTransa
                 Rp
               </span>
               <input
-                type="number"
+                type="text"
+                inputMode="numeric"
                 name="amount"
                 required
-                min="500"
-                step="500"
-                defaultValue={transaction.amount}
+                value={amountInput}
+                onChange={(e) => setAmountInput(formatNumberInput(e.target.value))}
                 placeholder="50.000"
                 className={`w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-300 text-slate-900 font-semibold focus:outline-none focus:ring-2 ${
                   isIncome ? "focus:ring-emerald-500" : "focus:ring-rose-500"
@@ -189,40 +198,18 @@ export default function EditTransactionForm({ transaction, members }: EditTransa
             />
           </div>
 
-          {/* Kategori */}
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">
-              Kategori Transaksi <span className="text-rose-500">*</span>
-            </label>
-            <select
-              name="category"
-              required
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className={`w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-xs font-medium focus:outline-none focus:ring-2 ${
-                isIncome ? "focus:ring-emerald-500" : "focus:ring-rose-500"
-              } bg-white`}
-            >
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Pihak / Penyetor / Penerima */}
-          {isIncome ? (
+          {/* Pihak / Penyetor (Pemasukan) */}
+          {isIncome && (
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="text-xs font-bold text-slate-700">
-                  Nama Penyetor (Anggota Koas / Pihak Luar)
+                  Nama Penyetor (Anggota Koas / Pihak Luar) <span className="text-rose-500">*</span>
                 </label>
                 {members.length > 0 && (
                   <button
                     type="button"
                     onClick={() => setUseCustomPayer(!useCustomPayer)}
-                    className="text-[11px] text-blue-600 hover:underline font-medium"
+                    className="text-[11px] text-blue-600 hover:underline font-medium cursor-pointer"
                   >
                     {useCustomPayer ? "Pilih dari Daftar Anggota" : "Ketik Nama Manual"}
                   </button>
@@ -232,6 +219,7 @@ export default function EditTransactionForm({ transaction, members }: EditTransa
               {!useCustomPayer && members.length > 0 ? (
                 <select
                   name="memberId"
+                  required
                   defaultValue={transaction.memberId || ""}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
                 >
@@ -246,24 +234,12 @@ export default function EditTransactionForm({ transaction, members }: EditTransa
                 <input
                   type="text"
                   name="payerPayee"
+                  required
                   defaultValue={transaction.payerPayee || ""}
                   placeholder="Contoh: dr. Naufal / Sumbangan Alumni"
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               )}
-            </div>
-          ) : (
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Peruntukan / PIC Pembeli
-              </label>
-              <input
-                type="text"
-                name="payerPayee"
-                defaultValue={transaction.payerPayee || ""}
-                placeholder="Contoh: Apotek K-24 / Konsumsi Jaga Malam"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-rose-500"
-              />
             </div>
           )}
 
