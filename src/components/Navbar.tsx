@@ -39,13 +39,13 @@ export default function Navbar({ user }: NavbarProps) {
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-14 sm:h-16">
             {/* Logo & Kelompok Info */}
-            <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition">
+            <Link href="/" className="flex items-center gap-2 sm:gap-2.5 group min-w-0 mr-2">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition shrink-0">
                 <Stethoscope className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
-              <div>
-                <span className="font-bold text-slate-900 text-sm sm:text-base leading-tight block">Kas Low Kort1sol</span>
-                <span className="text-[10px] sm:text-[11px] text-blue-600 font-medium leading-none block">Buku Kas Kelompok & Gelombang</span>
+              <div className="min-w-0">
+                <span className="font-bold text-slate-900 text-xs sm:text-base leading-tight block truncate">Kas Low Kort1sol</span>
+                <span className="text-[9px] sm:text-[11px] text-blue-600 font-medium leading-none block truncate">Buku Kas Kelompok & Gelombang</span>
               </div>
             </Link>
 
@@ -72,11 +72,11 @@ export default function Navbar({ user }: NavbarProps) {
             </nav>
 
             {/* User / Login Area */}
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
               {user ? (
-                <div className="flex items-center gap-2 sm:gap-2.5">
-                  <div className="text-right hidden sm:block">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold shadow-2xs">
+                <div className="flex items-center gap-1.5 sm:gap-2.5">
+                  <div>
+                    <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 rounded-lg sm:rounded-xl bg-blue-50 border border-blue-200 text-blue-700 text-[11px] sm:text-xs font-bold shadow-2xs">
                       <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
                       {user.role === "ADMIN" ? "Admin" : "Bendahara"}
                     </span>
@@ -85,7 +85,7 @@ export default function Navbar({ user }: NavbarProps) {
                     <button
                       type="submit"
                       title="Logout"
-                      className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                      className="p-1.5 sm:p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
                     >
                       <LogOut className="w-4 h-4" />
                     </button>
@@ -94,7 +94,7 @@ export default function Navbar({ user }: NavbarProps) {
               ) : (
                 <Link
                   href="/login"
-                  className="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-xs transition"
+                  className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-xs transition"
                 >
                   <LogIn className="w-3.5 h-3.5" />
                   <span>Login <span className="hidden sm:inline">Bendahara</span></span>
