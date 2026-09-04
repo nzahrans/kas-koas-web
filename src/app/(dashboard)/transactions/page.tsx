@@ -40,9 +40,11 @@ export default async function TransactionsPage({ searchParams }: TransactionsPag
   }
   if (searchQuery) {
     whereClause.OR = [
-      { category: { contains: searchQuery, mode: "insensitive" } },
       { notes: { contains: searchQuery, mode: "insensitive" } },
+      { category: { contains: searchQuery, mode: "insensitive" } },
       { payerPayee: { contains: searchQuery, mode: "insensitive" } },
+      { member: { name: { contains: searchQuery, mode: "insensitive" } } },
+      { member: { nim: { contains: searchQuery, mode: "insensitive" } } },
     ];
   }
 
@@ -86,7 +88,7 @@ export default async function TransactionsPage({ searchParams }: TransactionsPag
             balance={balance}
             totalIncome={totalIncome}
             totalExpense={totalExpense}
-            groupName={`Kas Koas FKH (${titleKas})`}
+            groupName={`Kas Low Kort1sol (${titleKas})`}
           />
           <Link
             href="/income/new"
@@ -115,8 +117,8 @@ export default async function TransactionsPage({ searchParams }: TransactionsPag
                 <th className="py-3 px-4">Tanggal</th>
                 <th className="py-3 px-4">Buku Kas</th>
                 <th className="py-3 px-4">Tipe</th>
-                <th className="py-3 px-4">Kategori / Keterangan</th>
-                <th className="py-3 px-4">Pihak / Anggota</th>
+                <th className="py-3 px-4">Keterangan / Catatan</th>
+                <th className="py-3 px-4">Penyetor</th>
                 <th className="py-3 px-4 text-right">Nominal</th>
                 {session && <th className="py-3 px-4 text-center no-print">Aksi</th>}
               </tr>
@@ -132,6 +134,10 @@ export default async function TransactionsPage({ searchParams }: TransactionsPag
                 transactions.map((trx) => {
                   const isIncome = trx.type === "INCOME";
                   const isKelompok = trx.kasType === "KELOMPOK";
+                  const hasCustomCategory =
+                    trx.category &&
+                    !["Kas Kelompok", "Kas Gelombang", "Uang Kas Kelompok", "Uang Kas Gelombang"].includes(trx.category);
+
                   return (
                     <tr key={trx.id} className="hover:bg-slate-50/70 transition">
                       <td className="py-3.5 px-4 font-medium text-slate-700 whitespace-nowrap">
@@ -159,13 +165,32 @@ export default async function TransactionsPage({ searchParams }: TransactionsPag
                         </span>
                       </td>
                       <td className="py-3.5 px-4">
-                        <div className="font-bold text-slate-900">{trx.category}</div>
-                        {trx.notes && (
-                          <div className="text-[11px] text-slate-500 mt-0.5">{trx.notes}</div>
+                        <div className="font-bold text-slate-900">
+                          {trx.notes || (hasCustomCategory ? trx.category : (isIncome ? "Pemasukan Kas" : "Pengeluaran Kas"))}
+                        </div>
+                        {trx.notes && hasCustomCategory && (
+                          <div className="text-[11px] text-slate-500 mt-0.5">{trx.category}</div>
                         )}
                       </td>
                       <td className="py-3.5 px-4 text-slate-600 whitespace-nowrap">
-                        {trx.payerPayee || trx.member?.name || "-"}
+                        {isIncome ? (
+                          trx.member ? (
+                            <div>
+                              <span className="font-semibold text-slate-900">{trx.member.name}</span>
+                              {trx.member.nim && (
+                                <span className="text-[10px] text-slate-400 block font-normal">
+                                  NIM: {trx.member.nim}
+                                </span>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="font-medium text-slate-800">{trx.payerPayee || "-"}</span>
+                          )
+                        ) : (
+                          <span className="text-slate-400 text-[11px]">
+                            {trx.payerPayee ? `PIC: ${trx.payerPayee}` : "-"}
+                          </span>
+                        )}
                       </td>
                       <td className="py-3.5 px-4 text-right whitespace-nowrap font-extrabold text-sm">
                         <span className={isIncome ? "text-emerald-600" : "text-rose-600"}>
@@ -186,8 +211,10 @@ export default async function TransactionsPage({ searchParams }: TransactionsPag
                               transaction={{
                                 id: trx.id,
                                 type: trx.type,
+                                kasType: trx.kasType,
                                 amount: trx.amount,
                                 category: trx.category,
+                                notes: trx.notes,
                                 date: trx.date,
                                 payerPayee: trx.payerPayee || trx.member?.name,
                               }}

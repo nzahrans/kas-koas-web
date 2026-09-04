@@ -9,8 +9,10 @@ interface DeleteTransactionModalProps {
   transaction: {
     id: number;
     type: "INCOME" | "EXPENSE";
+    kasType?: "KELOMPOK" | "GELOMBANG";
     amount: number;
     category: string;
+    notes?: string | null;
     date: Date | string;
     payerPayee?: string | null;
   };
@@ -76,6 +78,18 @@ export default function DeleteTransactionModal({ transaction }: DeleteTransactio
             {/* Details Box */}
             <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-3.5 mb-4 text-xs space-y-2">
               <div className="flex justify-between items-center">
+                <span className="text-slate-500 font-medium">Buku Kas:</span>
+                <span
+                  className={`font-bold px-2 py-0.5 rounded-md text-[10px] ${
+                    transaction.kasType === "GELOMBANG"
+                      ? "bg-teal-50 text-teal-700 border border-teal-200"
+                      : "bg-blue-50 text-blue-700 border border-blue-200"
+                  }`}
+                >
+                  {transaction.kasType === "GELOMBANG" ? "Kas Gelombang" : "Kas Kelompok"}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
                 <span className="text-slate-500 font-medium">Tipe Transaksi:</span>
                 <span
                   className={`font-bold px-2 py-0.5 rounded-full text-[10px] ${
@@ -92,11 +106,19 @@ export default function DeleteTransactionModal({ transaction }: DeleteTransactio
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-500 font-medium">Kategori:</span>
+                <span className="text-slate-500 font-medium">Keterangan:</span>
                 <span className="font-semibold text-slate-800 truncate max-w-[200px]">
-                  {transaction.category}
+                  {transaction.notes || (isIncome ? "Pemasukan Kas" : "Pengeluaran Kas")}
                 </span>
               </div>
+              {isIncome && transaction.payerPayee && (
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-500 font-medium">Penyetor:</span>
+                  <span className="font-semibold text-slate-800 truncate max-w-[200px]">
+                    {transaction.payerPayee}
+                  </span>
+                </div>
+              )}
               <div className="flex justify-between items-center">
                 <span className="text-slate-500 font-medium">Tanggal:</span>
                 <span className="text-slate-700">{formatDateID(transaction.date)}</span>
