@@ -97,13 +97,6 @@ export default function LoginPage() {
               )}
             </button>
           </form>
-
-          <div className="mt-5 p-3 bg-blue-50/80 rounded-xl border border-blue-100 text-[11px] text-blue-700">
-            <strong>Akun Default Awal:</strong>
-            <div className="mt-1">
-              Username: <code>bendahara</code> | Password: <code>admin123</code>
-            </div>
-          </div>
         </div>
       </div>
     </div>
