@@ -53,14 +53,3 @@ Aplikasi web pembukuan kas transparan untuk kelompok dokter hewan muda (Koas Ked
    ```
    Buka [http://localhost:3000](http://localhost:3000) di browser.
 
----
-
-## 🌐 Deployment (Vercel)
-
-1. Import project dari GitHub ke **Vercel**.
-2. Tambahkan 3 Environment Variables:
-   - `DATABASE_URL` (Supabase Connection Pooler, port 6543)
-   - `DIRECT_URL` (Supabase Direct, port 5432)
-   - `JWT_SECRET` (String acak rahasia)
-3. Pastikan region serverless diatur ke **Singapore (sin1)** sesuai konfigurasi `vercel.json`.
-4. Deploy!
